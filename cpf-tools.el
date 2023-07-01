@@ -58,7 +58,7 @@
 
 ;;; Code:
 ;;;###autoload
-(defun generate-cpf (arg)
+(defun cpf-tools/generate-cpf (arg)
   "Generate a CPF number. C-u to insert, C-u C-u to format, C-u C-u C-u to insert formatted."
   (interactive "P")
   (let* ((cpf (mapcar (lambda (digit) (random 10)) (number-sequence 1 9))))
@@ -119,12 +119,14 @@
 
 (defun format-cpf (cpf-string)
   "Format string as CPF."
+  (if (not (= (length (replace-regexp-in-string "[^0-9]" "" cpf-string)) 11))
+      (user-error "Invalid CPF length."))
   (replace-regexp-in-string
    "^\\([0-9]\\{3\\}\\)\\([0-9]\\{3\\}\\)\\([0-9]\\{3\\}\\)\\([0-9]\\{2\\}\\)$"
    "\\1.\\2.\\3-\\4"
    cpf-string))
 
-(defun format-cpf-region (beg end)
+(defun cpf-tools/format-cpf-region (beg end)
   "Format marked region as CPF."
   (interactive "r")
   (let ((cpf (format-cpf (buffer-substring beg end))))
@@ -161,7 +163,7 @@
           t)))))
 
 ;;;###autoload
-(defun generate-cnpj (arg)
+(defun cpf-tools/generate-cnpj (arg)
   "Generate a valid CNPJ number."
   (interactive "P")
   (let ((cnpj (mapconcat 'number-to-string
@@ -177,19 +179,33 @@
           ((equal arg '(64))
            (insert (format-cnpj cnpj))))))
 
-(defun format-cnpj (cpf-string)
+(defun format-cnpj (cnpj-string)
   "Formats string as CNPJ."
-  (replace-regexp-in-string
-   "^\\([0-9]\\{2\\}\\)\\([0-9]\\{3\\}\\)\\([0-9]\\{3\\}\\)\\([0-9]\\{4\\}\\)\\([0-9]\\{2\\}\\)$"
-   "\\1.\\2.\\3/\\4-\\5"
-   cpf-string))
+    (if (not (= (length (replace-regexp-in-string "[^0-9]" "" cnpj-string)) 14))
+        (user-error "Invalid CNPJ length.")
+      (replace-regexp-in-string
+       "^\\([0-9]\\{2\\}\\)\\([0-9]\\{3\\}\\)\\([0-9]\\{3\\}\\)\\([0-9]\\{4\\}\\)\\([0-9]\\{2\\}\\)$"
+       "\\1.\\2.\\3/\\4-\\5"
+       cnpj-string)))
 
-(defun format-cnpj-region (beg end)
+;;;###autoload
+(defun cpf-tools/format-cnpj-region (beg end)
   "Format marked region as CNPJ."
   (interactive "r")
   (let ((cnpj (format-cnpj (buffer-substring beg end))))
     (delete-region beg end)
     (insert cnpj)))
+
+;;;###autoload
+(defun cpf-tools/format-cpf-cnpj-region (beg end)
+  "Format marked region as CPF or CNPJ based on the length."
+  (interactive "r")
+  (let ((cpf-or-cnpj (buffer-substring beg end)))
+    (cond ((= (length cpf-or-cnpj) 11) (cpf-tools/format-cpf-region beg end))
+          ((= (length cpf-or-cnpj) 14) (cpf-tools/format-cnpj-region beg end))
+          (t (message "Invalid input length.")))
+    )
+  )
 
 (provide 'cpf-tools)
 ;;; cpf-tools.el ends here
