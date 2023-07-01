@@ -1,5 +1,7 @@
 Tools for dealing with CPF and CNPJ numbers.
 
+![Screen cast](screencast.gif)
+
 ## Installation
 
 <kbd>M</kbd><kbd>x</kbd> `package-install-file cpf-tools.el`
