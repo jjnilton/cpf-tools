@@ -59,7 +59,7 @@
 
 ;;; Code:
 ;;;###autoload
-(defun cpf-tools/generate-cpf (arg)
+(defun cpf-tools/generate-cpf (&optional arg)
   "Generate a CPF number. C-u to insert, C-u C-u to format, C-u C-u C-u to insert formatted."
   (interactive "P")
   (let* ((cpf (mapcar (lambda (digit) (random 10)) (number-sequence 1 9))))
@@ -164,7 +164,7 @@
           t)))))
 
 ;;;###autoload
-(defun cpf-tools/generate-cnpj (arg)
+(defun cpf-tools/generate-cnpj (&optional arg)
   "Generate a valid CNPJ number."
   (interactive "P")
   (let ((cnpj (mapconcat 'number-to-string
