@@ -2,9 +2,7 @@ Tools for dealing with CPF and CNPJ numbers.
 
 ## Installation
 
-```
-<kbd>M</kbd><kbd>x</kbd> package-install-file cpf-tools.el
-```
+<kbd>M</kbd><kbd>x</kbd> `package-install-file cpf-tools.el`
 
 Or just place `cpf-tools.el` file in the `load-path` directory and `(require 'cpf-cnpj)`.
 
@@ -24,7 +22,7 @@ Note: these interactive functions accepts prefixes:
 
 To format CPF and CNPJ:
 
-- (cpf-tools/format-cpf-region (point-min) (point-max));  => "123.456.789-10"
+- (cpf-tools/format-cpf-region (point-min) (point-max))  => "123.456.789-10"
 - (cpf-tools/format-cnpj-region (point-min) (point-max)) => => "12.345.678/0001-90"
 - (cpf-tools/format-cpf-cnpj-region (point-min) (point-max)) => "123.456.789-10" or "12.345.678/0001-90"
 
