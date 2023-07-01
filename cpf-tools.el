@@ -43,8 +43,8 @@
 ;;
 ;; Then you can call the functions provided by the package. For example:
 ;;
-;;   (generate-cpf) ; => "12345678910"
-;;   (generate-cnpj) ; => "12.345.678/0001-90"
+;;   (cpf-tools/generate-cpf) ; => "12345678910"
+;;   (cpf-tools/generate-cnpj) ; => "12345678000190"
 ;;
 ;; Note: these functions accepts prefixes:
 ;;
@@ -53,8 +53,9 @@
 ;;   C-u C-u ; outputs the generated and formatted CPF/CNPJ to the *Messages* buffer
 ;;   C-u C-u C-u ; inserts and formats the generated CPF/CNPJ string at point
 ;;
-;;   (format-cpf-region (point-min) (point-max));  => "12345678910"
-;;   (format-cnpj-region (point-min) (point-max)) => => "12.345.678/0001-90"
+;;   (cpf-tools/format-cpf-region (point-min) (point-max));  => "123.456.789-10"
+;;   (cpf-tools/format-cnpj-region (point-min) (point-max)) => => "12.345.678/0001-90"
+;;   (cpf-tools/format-cpf-cnpj-region (point-min) (point-max)) => "123.456.789-10" or "12.345.678/0001-90"
 
 ;;; Code:
 ;;;###autoload
@@ -97,7 +98,7 @@
               (let ((verifier-digit (find-verifier-digit cpf-without-digits)))
                 (if (= verifier-digit (nth i verifiers-digits))
                     (progn
-                      (nconc cpf-without-digits (list digito-verificador)))
+                      (nconc cpf-without-digits (list verifiers-digits)))
                   (progn
                     (throw 'return nil)))))
             t))
@@ -138,7 +139,7 @@
         (verifiers (if (= (length cnpj-string) 12) '(5 4 3 2 9 8 7 6 5 4 3 2) '(6 5 4 3 2 9 8 7 6 5 4 3 2))))
     (let ((verifier-digit nil))
       (dotimes (i (length cnpj))
-        (push (* (nth i cnpj) (nth i verifiers)) verfier-digit))
+        (push (* (nth i cnpj) (nth i verifiers)) verifier-digit))
       (let ((verifier-digit (% (apply '+ verifier-digit) 11)))
         (if (> 2 verifier-digit)
             (number-to-string 0)
@@ -158,7 +159,7 @@
                  (find-next-verifier-digit-cnpj cnpj-without-digits)
                  (string-to-number (substring verifiers-digits i (1+ i))))
                 (setf cnpj-without-digits
-                      (concat cnpj-sem-digitos (substring verifiers-digits i (1+ i))))
+                      (concat cnpj-without-digits (substring verifiers-digits i (1+ i))))
               (throw 'return nil)))
           t)))))
 
@@ -167,9 +168,9 @@
   "Generate a valid CNPJ number."
   (interactive "P")
   (let ((cnpj (mapconcat 'number-to-string
-                         (append (mapcar (lambda (digito) (random 10)) (number-sequence 1 8)) '(0 0 0 1)) "")))
+                         (append (mapcar (lambda (digit) (random 10)) (number-sequence 1 8)) '(0 0 0 1)) "")))
     (dotimes (i 2)
-      (setf cnpj (concat cnpj (encontrar-proximo-digito-verificador-cnpj cnpj))))
+      (setf cnpj (concat cnpj (find-next-verifier-digit-cnpj cnpj))))
     (cond ((equal arg nil)
            (message cnpj))
           ((equal arg '(4))
