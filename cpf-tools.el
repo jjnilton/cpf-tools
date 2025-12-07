@@ -3,7 +3,8 @@
 ;; Copyright (C) 2023
 
 ;; Author: JJ
-;; Version: 0.1
+;; URL: https://github.com/jjnilton/cpf-tools
+;; Version: 0.1.1
 ;; Keywords: convenience
 ;; Package-Requires: ((emacs "27.1"))
 
@@ -85,20 +86,20 @@
           ((equal arg '(64))
            (insert (format-cpf (mapconcat 'number-to-string cpf "")))))))
 
-(defun validate-cpf (cpf-string-or-list-of-numbers)
-  "Take a CPF (11-digit string or list of numbers) and checks if is valid."
+(defun validate-cpf (cpf-string)
+  "Take a CPF (11-digit string) and checks if is valid."
   (let ((cpf (mapcar #'string-to-number
                      (split-string-and-unquote
-                      (replace-regexp-in-string "[^0-9]" "" cpf-string-or-list-of-numbers) ""))))
+                      (replace-regexp-in-string "[^0-9]" "" cpf-string) ""))))
     (if (= (length cpf) 11)
         (let ((cpf-without-digits (seq-subseq cpf 0 -2))
               (verifiers-digits (seq-subseq cpf -2)))
           (catch 'return
             (dotimes (i 2)
-              (let ((verifier-digit (find-verifier-digit cpf-without-digits)))
+              (let ((verifier-digit (find-verifier-digit-cpf cpf-without-digits)))
                 (if (= verifier-digit (nth i verifiers-digits))
                     (progn
-                      (nconc cpf-without-digits (list verifiers-digits)))
+                      (nconc cpf-without-digits (list verifier-digit)))
                   (progn
                     (throw 'return nil)))))
             t))
