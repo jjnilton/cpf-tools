@@ -38,9 +38,9 @@
 ;; based on the official validation algorithms used by the Brazilian government.
 ;; These functions can be used to ensure that user input is valid and to prevent errors in data processing.
 
-;; To use this package, simply require the `cpf-cnpj` feature:
+;; To use this package, simply require the `cpf-tools` feature:
 ;;
-;;   (require 'cpf-cnpj)
+;;   (require 'cpf-tools)
 ;;
 ;; Then you can call the functions provided by the package. For example:
 ;;
@@ -61,7 +61,8 @@
 ;;; Code:
 ;;;###autoload
 (defun cpf-tools/generate-cpf (&optional arg)
-  "Generate a CPF number. C-u to insert, C-u C-u to format, C-u C-u C-u to insert formatted."
+  "Generate a valid CPF number.
+Prefix args meant to insert, return formatted or insert formatted."
   (interactive "P")
   (let* ((cpf (mapcar (lambda (digit) (random 10)) (number-sequence 1 9))))
     (dotimes (i 2)
@@ -136,6 +137,7 @@
     (insert cpf)))
 
 (defun find-next-verifier-digit-cnpj (cnpj-string)
+  "Finds next verifier digit of a CNPJ string."
   (let ((cnpj (mapcar #'string-to-number (split-string-and-unquote cnpj-string "")))
         (verifiers (if (= (length cnpj-string) 12) '(5 4 3 2 9 8 7 6 5 4 3 2) '(6 5 4 3 2 9 8 7 6 5 4 3 2))))
     (let ((verifier-digit nil))
