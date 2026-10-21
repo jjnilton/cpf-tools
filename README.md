@@ -1,9 +1,9 @@
 Tools for working with CPF and CNPJ numbers.
 
 ### Features
-- Generate CPF/CNPJ (optionally formatted)
-- Format region as CPF/CNPJ
-- Insert generated CPF
+- Generate CPF/CNPJ (optionally formatted);
+- Format region as CPF/CNPJ;
+- Insert generated CPF/CNPJ.
 
 ![Screen cast](screencast.gif)
 
@@ -29,8 +29,8 @@ Or just place `cpf-tools.el` file in the `load-path` directory and `(require 'cp
 
 To generate valid CPF and CNPJ:
 
-- (cpf-tools/generate-cpf) => "12345678910"
-- (cpf-tools/generate-cnpj) => "12345678000190"
+- `(cpf-tools/generate-cpf)` => "12345678910"
+- `(cpf-tools/generate-cnpj)` => "12345678000190"
 
 Note: these functions are interactive and can be used the following prefixes:
 
