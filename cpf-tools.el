@@ -211,5 +211,26 @@ Prefix args meant to insert, return formatted or insert formatted."
     )
   )
 
+;;;###autoload
+(defun cpf-tools/complete-cpf (incomplete-cpf-string)
+  "Find valid CPF numbers matching INCOMPLETE-CPF-STRING containing wildcards (* or ?).
+Displays matching valid CPFs in a temporary results buffer."
+  (interactive "sIncomplete CPF pattern (e.g. ***.781.235-**): ")
+  (let* ((normalized-pattern (replace-regexp-in-string "\\?" "*" incomplete-cpf-string))
+         (stars-amount (seq-count (lambda (c) (= c ?*)) normalized-pattern))
+         (iterations (string-to-number (concat "1" (make-string stars-amount ?0))))
+         (format-string (let* ((stars-only (replace-regexp-in-string "\\.\\|-" "" normalized-pattern)))
+                          (string-replace "*" "%d" stars-only)))
+         (temp-buffer-name "*cpf-tools/complete-cpf results*"))
+    (with-output-to-temp-buffer temp-buffer-name
+      (pop-to-buffer temp-buffer-name)
+      (erase-buffer)
+      (insert (format "Matching CPFs for pattern: %s\n\n" incomplete-cpf-string))
+      (dotimes (i iterations)
+        (let* ((l (mapcar #'string-to-number (split-string-and-unquote (format (format "%%0%dd" stars-amount) i) "")))
+               (cpf-string (apply #'format format-string l)))
+          (if (validate-cpf cpf-string)
+              (insert (format "%s\n" (format-cpf cpf-string)))))))))
+
 (provide 'cpf-tools)
 ;;; cpf-tools.el ends here

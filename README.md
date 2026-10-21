@@ -1,9 +1,13 @@
+# cpf-tools.el
+
 Tools for working with CPF and CNPJ numbers.
 
 ### Features
 - Generate CPF/CNPJ (optionally formatted);
 - Format region as CPF/CNPJ;
-- Insert generated CPF/CNPJ.
+- Insert generated CPF/CNPJ;
+- Validate generated CPF/CNPJ;
+- Fill missing numbers of incomplete CPF.
 
 ![Screen cast](screencast.gif)
 
@@ -39,7 +43,9 @@ Note: these functions are interactive and can be used the following prefixes:
 - <kbd>C</kbd><kbd>u</kbd> <kbd>C</kbd><kbd>u</kbd>: outputs the generated and formatted CPF/CNPJ to the `*Messages*` buffer;
 - <kbd>C</kbd><kbd>u</kbd> <kbd>C</kbd><kbd>u</kbd> <kbd>C</kbd><kbd>u</kbd>: inserts and formats the generated CPF/CNPJ string at point.
 
-To format CPF and CNPJ:
+To find valid CPFs matching an incomplete pattern with wildcards (`*` or `?`):
+
+- `(cpf-tools/complete-cpf "***.781.235-**")` (interactive command `M-x cpf-tools/complete-cpf`)
 
 - `(cpf-tools/format-cpf-region (point-min) (point-max))`  => "123.456.789-10"
 - `(cpf-tools/format-cnpj-region (point-min) (point-max))` => "12.345.678/0001-90"
