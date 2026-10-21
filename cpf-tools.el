@@ -136,34 +136,30 @@ Prefix args meant to insert, return formatted or insert formatted."
     (delete-region beg end)
     (insert cpf)))
 
-(defun find-next-verifier-digit-cnpj (cnpj-string)
-  "Finds next verifier digit of a CNPJ string."
-  (let ((cnpj (mapcar #'string-to-number (split-string-and-unquote cnpj-string "")))
-        (verifiers (if (= (length cnpj-string) 12) '(5 4 3 2 9 8 7 6 5 4 3 2) '(6 5 4 3 2 9 8 7 6 5 4 3 2))))
-    (let ((verifier-digit nil))
-      (dotimes (i (length cnpj))
-        (push (* (nth i cnpj) (nth i verifiers)) verifier-digit))
-      (let ((verifier-digit (% (apply '+ verifier-digit) 11)))
-        (if (> 2 verifier-digit)
-            (number-to-string 0)
-          (number-to-string (- 11 verifier-digit)))))))
+(defun find-next-verifier-digit-cnpj (cnpj-digits-string)
+  "Finds next verifier digit of a CNPJ digits string."
+  (let* ((digits (mapcar #'string-to-number (split-string-and-unquote cnpj-digits-string "")))
+         (verifiers (if (= (length cnpj-digits-string) 12) '(5 4 3 2 9 8 7 6 5 4 3 2) '(6 5 4 3 2 9 8 7 6 5 4 3 2)))
+         (sum 0))
+    (dotimes (i (length digits))
+      (setq sum (+ sum (* (nth i digits) (nth i verifiers)))))
+    (let ((remainder (% sum 11)))
+      (number-to-string (if (< remainder 2) 0 (- 11 remainder))))))
 
 (defun validate-cnpj (cnpj-string)
   "Receive a CNPJ string, checks if CNPJ number is valid."
   (let ((cleaned-cnpj (replace-regexp-in-string "[^0-9]" "" cnpj-string)))
     (if (/= (length cleaned-cnpj) 14)
         nil
-      (let ((cnpj cnpj-string)
-            (cnpj-without-digits (substring cnpj 0 -2))
-            (verifiers-digits (substring cnpj -2)))
+      (let ((cnpj-without-digits (substring cleaned-cnpj 0 12))
+            (verifiers-digits (substring cleaned-cnpj 12)))
         (catch 'return
           (dotimes (i 2)
-            (if (=
-                 (find-next-verifier-digit-cnpj cnpj-without-digits)
-                 (string-to-number (substring verifiers-digits i (1+ i))))
-                (setf cnpj-without-digits
-                      (concat cnpj-without-digits (substring verifiers-digits i (1+ i))))
-              (throw 'return nil)))
+            (let ((expected (find-next-verifier-digit-cnpj cnpj-without-digits))
+                  (actual (substring verifiers-digits i (1+ i))))
+              (unless (string= expected actual)
+                (throw 'return nil))
+              (setq cnpj-without-digits (concat cnpj-without-digits actual))))
           t)))))
 
 ;;;###autoload
@@ -231,6 +227,27 @@ Displays matching valid CPFs in a temporary results buffer."
                (cpf-string (apply #'format format-string l)))
           (if (validate-cpf cpf-string)
               (insert (format "%s\n" (format-cpf cpf-string)))))))))
+
+;;;###autoload
+(defun cpf-tools/complete-cnpj (incomplete-cnpj-string)
+  "Find valid CNPJ numbers matching INCOMPLETE-CNPJ-STRING containing wildcards (* or ?).
+Displays matching valid CNPJs in a temporary results buffer."
+  (interactive "sIncomplete CNPJ pattern (e.g. 12.345.678/****-**): ")
+  (let* ((normalized-pattern (replace-regexp-in-string "\\?" "*" incomplete-cnpj-string))
+         (stars-amount (seq-count (lambda (c) (= c ?*)) normalized-pattern))
+         (iterations (string-to-number (concat "1" (make-string stars-amount ?0))))
+         (format-string (let* ((stars-only (replace-regexp-in-string "[^0-9*]" "" normalized-pattern)))
+                          (string-replace "*" "%d" stars-only)))
+         (temp-buffer-name "*cpf-tools/complete-cnpj results*"))
+    (with-output-to-temp-buffer temp-buffer-name
+      (pop-to-buffer temp-buffer-name)
+      (erase-buffer)
+      (insert (format "Matching CNPJs for pattern: %s\n\n" incomplete-cnpj-string))
+      (dotimes (i iterations)
+        (let* ((l (mapcar #'string-to-number (split-string-and-unquote (format (format "%%0%dd" stars-amount) i) "")))
+               (cnpj-string (apply #'format format-string l)))
+          (if (validate-cnpj cnpj-string)
+              (insert (format "%s\n" (format-cnpj cnpj-string)))))))))
 
 (provide 'cpf-tools)
 ;;; cpf-tools.el ends here
