@@ -60,7 +60,7 @@
 
 ;;; Code:
 ;;;###autoload
-(defun cpf-tools/generate-cpf (&optional arg)
+(defun cpf-tools-generate-cpf (&optional arg)
   "Generate a valid CPF number.
 Prefix ARGs meant to insert, return formatted or insert formatted."
   (interactive "P")
@@ -87,7 +87,7 @@ Prefix ARGs meant to insert, return formatted or insert formatted."
           ((equal arg '(64))
            (insert (format-cpf (mapconcat 'number-to-string cpf "")))))))
 
-(defun validate-cpf (cpf-string)
+(defun cpf-tools-validate-cpf (cpf-string)
   "Take a CPF (11-digit string) and check if is valid.
 Argument CPF-STRING CPF number as string."
   (let ((cleaned-cpf (replace-regexp-in-string "[^0-9]" "" cpf-string)))
@@ -99,7 +99,7 @@ Argument CPF-STRING CPF number as string."
               (verifiers-digits (seq-subseq cpf -2)))
           (catch 'return
             (dotimes (i 2)
-              (let ((verifier-digit (find-verifier-digit-cpf cpf-without-digits)))
+              (let ((verifier-digit (cpf-tools-find-verifier-digit-cpf cpf-without-digits)))
                 (if (= verifier-digit (nth i verifiers-digits))
                     (progn
                       (nconc cpf-without-digits (list verifier-digit)))
@@ -107,7 +107,7 @@ Argument CPF-STRING CPF number as string."
                     (throw 'return nil)))))
             t))))))
 
-(defun find-verifier-digit-cpf (cpf-without-digits-as-list)
+(defun cpf-tools-find-verifier-digit-cpf (cpf-without-digits-as-list)
   "Receive a CPF number without the verification digits and return the verification digit.
 Argument CPF-WITHOUT-DIGITS-AS-LIST CPF number without identifier digits, as list."
   (let* ((cpf cpf-without-digits-as-list)
@@ -122,7 +122,7 @@ Argument CPF-WITHOUT-DIGITS-AS-LIST CPF number without identifier digits, as lis
            (verifier-digit (if (< remainder 2) 0 (- 11 remainder))))
       verifier-digit)))
 
-(defun format-cpf (cpf-string)
+(defun cpf-tools-format-cpf (cpf-string)
   "Format string as CPF.
 Argument CPF-STRING unformatted CPF number as string."
   (if (not (= (length (replace-regexp-in-string "[^0-9]" "" cpf-string)) 11))
@@ -132,14 +132,15 @@ Argument CPF-STRING unformatted CPF number as string."
    "\\1.\\2.\\3-\\4"
    cpf-string))
 
-(defun cpf-tools/format-cpf-region (beg end)
+;;;###autoload
+(defun cpf-tools-format-cpf-region (beg end)
   "Format marked region as CPF."
   (interactive "r")
-  (let ((cpf (format-cpf (buffer-substring beg end))))
+  (let ((cpf (cpf-tools-format-cpf (buffer-substring beg end))))
     (delete-region beg end)
     (insert cpf)))
 
-(defun find-next-verifier-digit-cnpj (cnpj-digits-string)
+(defun cpf-tools-find-next-verifier-digit-cnpj (cnpj-digits-string)
   "Finds next verifier digit of a CNPJ digits string."
   (let* ((cnpj-digits (mapcar #'string-to-number (split-string-and-unquote cnpj-digits-string "")))
          (verifiers-digits (if (= (length cnpj-digits-string) 12) '(5 4 3 2 9 8 7 6 5 4 3 2) '(6 5 4 3 2 9 8 7 6 5 4 3 2)))
@@ -149,7 +150,7 @@ Argument CPF-STRING unformatted CPF number as string."
     (let ((remainder (% sum 11)))
       (number-to-string (if (< remainder 2) 0 (- 11 remainder))))))
 
-(defun validate-cnpj (cnpj-string)
+(defun cpf-tools-validate-cnpj (cnpj-string)
   "Receive a CNPJ string, checks if CNPJ number is valid."
   (let ((cleaned-cnpj (replace-regexp-in-string "[^0-9]" "" cnpj-string)))
     (if (or (/= (length cleaned-cnpj) 14)
@@ -159,7 +160,7 @@ Argument CPF-STRING unformatted CPF number as string."
             (verifiers-digits (substring cleaned-cnpj 12)))
         (catch 'return
           (dotimes (i 2)
-            (let ((expected (find-next-verifier-digit-cnpj cnpj-without-digits))
+            (let ((expected (cpf-tools-find-next-verifier-digit-cnpj cnpj-without-digits))
                   (actual (substring verifiers-digits i (1+ i))))
               (unless (string= expected actual)
                 (throw 'return nil))
@@ -167,7 +168,7 @@ Argument CPF-STRING unformatted CPF number as string."
           t)))))
 
 ;;;###autoload
-(defun cpf-tools/generate-cnpj (&optional arg)
+(defun cpf-tools-generate-cnpj (&optional arg)
   "Generate a valid CNPJ number."
   (interactive "P")
   (let ((cnpj (mapconcat 'number-to-string
@@ -183,7 +184,7 @@ Argument CPF-STRING unformatted CPF number as string."
           ((equal arg '(64))
            (insert (format-cnpj cnpj))))))
 
-(defun format-cnpj (cnpj-string)
+(defun cpf-tools-format-cnpj (cnpj-string)
   "Formats string as CNPJ."
     (if (not (= (length (replace-regexp-in-string "[^0-9]" "" cnpj-string)) 14))
         (user-error "Invalid CNPJ length.")
@@ -193,7 +194,7 @@ Argument CPF-STRING unformatted CPF number as string."
        cnpj-string)))
 
 ;;;###autoload
-(defun cpf-tools/format-cnpj-region (beg end)
+(defun cpf-tools-format-cnpj-region (beg end)
   "Format marked region as CNPJ."
   (interactive "r")
   (let ((cnpj (format-cnpj (buffer-substring beg end))))
@@ -201,7 +202,7 @@ Argument CPF-STRING unformatted CPF number as string."
     (insert cnpj)))
 
 ;;;###autoload
-(defun cpf-tools/format-cpf-cnpj-region (beg end)
+(defun cpf-tools-format-cpf-cnpj-region (beg end)
   "Format marked region as CPF or CNPJ based on the length."
   (interactive "r")
   (let ((cpf-or-cnpj (buffer-substring beg end)))
@@ -212,7 +213,7 @@ Argument CPF-STRING unformatted CPF number as string."
   )
 
 ;;;###autoload
-(defun cpf-tools/complete-cpf (incomplete-cpf-string)
+(defun cpf-tools-complete-cpf (incomplete-cpf-string)
   "Find valid CPF numbers matching INCOMPLETE-CPF-STRING containing wildcards (* or ?).
 Displays matching valid CPFs in a temporary results buffer."
   (interactive "sIncomplete CPF pattern (e.g. ***.781.235-**): ")
@@ -233,7 +234,7 @@ Displays matching valid CPFs in a temporary results buffer."
               (insert (format "%s\n" (format-cpf cpf-string)))))))))
 
 ;;;###autoload
-(defun cpf-tools/complete-cnpj (incomplete-cnpj-string)
+(defun cpf-tools-complete-cnpj (incomplete-cnpj-string)
   "Find valid CNPJ numbers matching INCOMPLETE-CNPJ-STRING containing wildcards (* or ?).
 Displays matching valid CNPJs in a temporary results buffer."
   (interactive "sIncomplete CNPJ pattern (e.g. 12.345.678/****-**): ")
