@@ -62,7 +62,7 @@
 ;;;###autoload
 (defun cpf-tools/generate-cpf (&optional arg)
   "Generate a valid CPF number.
-Prefix args meant to insert, return formatted or insert formatted."
+Prefix ARGs meant to insert, return formatted or insert formatted."
   (interactive "P")
   (let* ((cpf (mapcar (lambda (digit) (random 10)) (number-sequence 1 9))))
     (dotimes (i 2)
@@ -88,7 +88,8 @@ Prefix args meant to insert, return formatted or insert formatted."
            (insert (format-cpf (mapconcat 'number-to-string cpf "")))))))
 
 (defun validate-cpf (cpf-string)
-  "Take a CPF (11-digit string) and checks if is valid."
+  "Take a CPF (11-digit string) and check if is valid.
+Argument CPF-STRING CPF number as string."
   (let ((cleaned-cpf (replace-regexp-in-string "[^0-9]" "" cpf-string)))
     (if (or (/= (length cleaned-cpf) 11)
             (string-match-p "\\`\\([0-9]\\)\\1+\\'" cleaned-cpf))
@@ -107,7 +108,8 @@ Prefix args meant to insert, return formatted or insert formatted."
             t))))))
 
 (defun find-verifier-digit-cpf (cpf-without-digits-as-list)
-  "Receive a CPF number without the verification digits and returns the verification digit."
+  "Receive a CPF number without the verification digits and return the verification digit.
+Argument CPF-WITHOUT-DIGITS-AS-LIST CPF number without identifier digits, as list."
   (let* ((cpf cpf-without-digits-as-list)
          (verifier-digit nil)
          (multipliers (number-sequence (1+ (length cpf)) 2 -1)))
@@ -121,7 +123,8 @@ Prefix args meant to insert, return formatted or insert formatted."
       verifier-digit)))
 
 (defun format-cpf (cpf-string)
-  "Format string as CPF."
+  "Format string as CPF.
+Argument CPF-STRING unformatted CPF number as string."
   (if (not (= (length (replace-regexp-in-string "[^0-9]" "" cpf-string)) 11))
       (user-error "Invalid CPF length."))
   (replace-regexp-in-string
