@@ -208,9 +208,7 @@ Argument CPF-STRING unformatted CPF number as string."
   (let ((cpf-or-cnpj (buffer-substring beg end)))
     (cond ((= (length cpf-or-cnpj) 11) (cpf-tools/format-cpf-region beg end))
           ((= (length cpf-or-cnpj) 14) (cpf-tools/format-cnpj-region beg end))
-          (t (message "Invalid input length.")))
-    )
-  )
+          (t (message "Invalid input length.")))))
 
 ;;;###autoload
 (defun cpf-tools-complete-cpf (incomplete-cpf-string)
