@@ -4,8 +4,8 @@
 
 ;; Author: JJ
 ;; URL: https://github.com/jjnilton/cpf-tools
-;; Version: 0.1.1
-;; Keywords: convenience
+;; Version: 0.1.2
+;; Keywords: cpf, cnpj, tools, generator, convenience
 ;; Package-Requires: ((emacs "27.1"))
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -89,10 +89,11 @@ Prefix args meant to insert, return formatted or insert formatted."
 
 (defun validate-cpf (cpf-string)
   "Take a CPF (11-digit string) and checks if is valid."
-  (let ((cpf (mapcar #'string-to-number
-                     (split-string-and-unquote
-                      (replace-regexp-in-string "[^0-9]" "" cpf-string) ""))))
-    (if (= (length cpf) 11)
+  (let ((cleaned-cpf (replace-regexp-in-string "[^0-9]" "" cpf-string)))
+    (if (or (/= (length cleaned-cpf) 11)
+            (string-match-p "\\`\\([0-9]\\)\\1+\\'" cleaned-cpf))
+        nil
+      (let ((cpf (mapcar #'string-to-number (split-string-and-unquote cleaned-cpf ""))))
         (let ((cpf-without-digits (seq-subseq cpf 0 -2))
               (verifiers-digits (seq-subseq cpf -2)))
           (catch 'return
@@ -103,8 +104,7 @@ Prefix args meant to insert, return formatted or insert formatted."
                       (nconc cpf-without-digits (list verifier-digit)))
                   (progn
                     (throw 'return nil)))))
-            t))
-      nil)))
+            t))))))
 
 (defun find-verifier-digit-cpf (cpf-without-digits-as-list)
   "Receive a CPF number without the verification digits and returns the verification digit."
@@ -138,18 +138,19 @@ Prefix args meant to insert, return formatted or insert formatted."
 
 (defun find-next-verifier-digit-cnpj (cnpj-digits-string)
   "Finds next verifier digit of a CNPJ digits string."
-  (let* ((digits (mapcar #'string-to-number (split-string-and-unquote cnpj-digits-string "")))
-         (verifiers (if (= (length cnpj-digits-string) 12) '(5 4 3 2 9 8 7 6 5 4 3 2) '(6 5 4 3 2 9 8 7 6 5 4 3 2)))
+  (let* ((cnpj-digits (mapcar #'string-to-number (split-string-and-unquote cnpj-digits-string "")))
+         (verifiers-digits (if (= (length cnpj-digits-string) 12) '(5 4 3 2 9 8 7 6 5 4 3 2) '(6 5 4 3 2 9 8 7 6 5 4 3 2)))
          (sum 0))
-    (dotimes (i (length digits))
-      (setq sum (+ sum (* (nth i digits) (nth i verifiers)))))
+    (dotimes (i (length cnpj-digits))
+      (setq sum (+ sum (* (nth i cnpj-digits) (nth i verifiers-digits)))))
     (let ((remainder (% sum 11)))
       (number-to-string (if (< remainder 2) 0 (- 11 remainder))))))
 
 (defun validate-cnpj (cnpj-string)
   "Receive a CNPJ string, checks if CNPJ number is valid."
   (let ((cleaned-cnpj (replace-regexp-in-string "[^0-9]" "" cnpj-string)))
-    (if (/= (length cleaned-cnpj) 14)
+    (if (or (/= (length cleaned-cnpj) 14)
+            (string-match-p "\\`\\([0-9]\\)\\1+\\'" cleaned-cnpj))
         nil
       (let ((cnpj-without-digits (substring cleaned-cnpj 0 12))
             (verifiers-digits (substring cleaned-cnpj 12)))
