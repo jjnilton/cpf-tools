@@ -51,3 +51,19 @@ To find valid CPFs and CNPJs matching incomplete patterns with wildcards (`*` or
 - `(cpf-tools/format-cpf-region (point-min) (point-max))`  => "123.456.789-10"
 - `(cpf-tools/format-cnpj-region (point-min) (point-max))` => "12.345.678/0001-90"
 - `(cpf-tools/format-cpf-cnpj-region (point-min) (point-max))` => "123.456.789-10" or "12.345.678/0001-90"
+
+## Testing
+
+Unit tests with Emacs' built-in `ert` framework:
+
+```bash
+emacs --batch -Q -L . -l cpf-tools.el -l test/cpf-tools-test.el -f ert-run-tests-batch-and-exit
+
+# - `--batch`: Runs Emacs in non-interactive (headless) batch mode.
+# - `-Q`: Quick startup; suppresses loading initialization files and site-start configuration # logs.
+# - `-L .`: Adds the current directory (`.`) to Emacs's `load-path`.
+# - `-l cpf-tools.el`: Loads the package file.
+# - `-l test/cpf-tools-test.el`: Loads the test suite file.
+# - `-f ert-run-tests-batch-and-exit`: Executes all tests and exits Emacs with status `0` on success or `1` on failure.
+```
+
