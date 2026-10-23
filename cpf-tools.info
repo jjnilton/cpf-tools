@@ -1,0 +1,106 @@
+This is cpf-tools.info, produced by makeinfo version 7.1.1 from
+cpf-tools.texi.
+
+INFO-DIR-SECTION Emacs
+START-INFO-DIR-ENTRY
+* Cpf-Tools: (cpf-tools).   Tools for working with CPF and CNPJ numbers.
+END-INFO-DIR-ENTRY
+
+
+File: cpf-tools.info,  Node: Top,  Next: Overview,  Up: (dir)
+
+CPF and CNPJ Tools
+******************
+
+This manual documents ‘cpf-tools’, an Emacs package for generating,
+validating, and formatting Brazilian CPF and CNPJ numbers.
+
+* Menu:
+
+* Overview::             What cpf-tools does.
+* Installation::         How to install the package.
+* Usage::                Commands and functions reference.
+
+
+File: cpf-tools.info,  Node: Overview,  Next: Installation,  Prev: Top,  Up: Top
+
+1 Overview
+**********
+
+‘cpf-tools’ provides utilities for working with Brazilian personal (CPF)
+and corporate (CNPJ) tax identification numbers.  Features include:
+   • Generating valid CPF and CNPJ numbers (with prefix arguments for
+     insertion or formatting).
+   • Validating CPF and CNPJ numbers.
+   • Formatting text regions containing CPF or CNPJ numbers.
+   • Completing incomplete CPF and CNPJ patterns containing wildcards
+     (‘*’ or ‘?’).
+
+
+File: cpf-tools.info,  Node: Installation,  Next: Usage,  Prev: Overview,  Up: Top
+
+2 Installation
+**************
+
+You can install ‘cpf-tools’ from MELPA or directly from source:
+
+   • Using ‘use-package’ and ‘:vc’:
+          (use-package cpf-tools
+            :ensure t
+            :vc (:url "https://github.com/jjnilton/cpf-tools" :rev :newest))
+   • Using ‘package-install-file’:
+          M-x package-install-file RET cpf-tools.el RET
+
+
+File: cpf-tools.info,  Node: Usage,  Prev: Installation,  Up: Top
+
+3 Usage
+*******
+
+Here are the primary interactive commands and functions provided by
+‘cpf-tools’:
+
+‘cpf-tools-generate-cpf (&optional arg)’
+     Generate a valid CPF number.  Prefix arguments control output and
+     insertion:
+        • ‘nil’: Output unformatted to ‘*Messages*’.
+        • ‘C-u’: Insert unformatted at point.
+        • ‘C-u C-u’: Output formatted to ‘*Messages*’.
+        • ‘C-u C-u C-u’: Insert formatted at point.
+
+‘cpf-tools-generate-cnpj (&optional arg)’
+     Generate a valid CNPJ number (supports the same prefix arguments as
+     ‘generate-cpf’).
+
+‘cpf-tools-complete-cpf (incomplete-cpf-string)’
+     Find and display valid CPF numbers matching an incomplete pattern
+     with wildcards (‘*’ or ‘?’), such as ‘***.781.235-**’.
+
+‘cpf-tools-complete-cnpj (incomplete-cnpj-string)’
+     Find and display valid CNPJ numbers matching an incomplete pattern
+     with wildcards (‘*’ or ‘?’).
+
+‘cpf-tools-format-cpf-region (beg end)’
+     Format the marked region as CPF.
+
+‘cpf-tools-format-cnpj-region (beg end)’
+     Format the marked region as CNPJ.
+
+‘cpf-tools-format-cpf-cnpj-region (beg end)’
+     Format the marked region as CPF or CNPJ automatically based on its
+     length.
+
+
+
+Tag Table:
+Node: Top218
+Node: Overview622
+Node: Installation1180
+Node: Usage1642
+
+End Tag Table
+
+
+Local Variables:
+coding: utf-8
+End:

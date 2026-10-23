@@ -1,0 +1,86 @@
+\input texinfo    @c -*-texinfo-*-
+@c %**start of header
+@setfilename cpf-tools.info
+@settitle CPF and CNPJ Tools for Emacs
+@c %**end of header
+
+@dircategory Emacs
+@direntry
+* Cpf-Tools: (cpf-tools).   Tools for working with CPF and CNPJ numbers.
+@end direntry
+
+@node Top
+@top CPF and CNPJ Tools
+
+This manual documents @code{cpf-tools}, an Emacs package for generating, validating, and formatting Brazilian CPF and CNPJ numbers.
+
+@menu
+* Overview::             What cpf-tools does.
+* Installation::         How to install the package.
+* Usage::                Commands and functions reference.
+@end menu
+
+@node Overview
+@chapter Overview
+
+@code{cpf-tools} provides utilities for working with Brazilian personal (CPF) and corporate (CNPJ) tax identification numbers. Features include:
+@itemize
+@item Generating valid CPF and CNPJ numbers (with prefix arguments for insertion or formatting).
+@item Validating CPF and CNPJ numbers.
+@item Formatting text regions containing CPF or CNPJ numbers.
+@item Completing incomplete CPF and CNPJ patterns containing wildcards (@code{*} or @code{?}).
+@end itemize
+
+@node Installation
+@chapter Installation
+
+You can install @code{cpf-tools} from MELPA or directly from source:
+
+@itemize
+@item Using @code{use-package} and @code{:vc}:
+@example
+(use-package cpf-tools
+  :ensure t
+  :vc (:url "https://github.com/jjnilton/cpf-tools" :rev :newest))
+@end example
+@item Using @code{package-install-file}:
+@example
+M-x package-install-file RET cpf-tools.el RET
+@end example
+@end itemize
+
+@node Usage
+@chapter Usage
+
+Here are the primary interactive commands and functions provided by @code{cpf-tools}:
+
+@table @code
+@item cpf-tools-generate-cpf (&optional arg)
+Generate a valid CPF number. Prefix arguments control output and insertion:
+@itemize
+@item @code{nil}: Output unformatted to @code{*Messages*}.
+@item @code{C-u}: Insert unformatted at point.
+@item @code{C-u C-u}: Output formatted to @code{*Messages*}.
+@item @code{C-u C-u C-u}: Insert formatted at point.
+@end itemize
+
+@item cpf-tools-generate-cnpj (&optional arg)
+Generate a valid CNPJ number (supports the same prefix arguments as @code{generate-cpf}).
+
+@item cpf-tools-complete-cpf (incomplete-cpf-string)
+Find and display valid CPF numbers matching an incomplete pattern with wildcards (@code{*} or @code{?}), such as @code{***.781.235-**}.
+
+@item cpf-tools-complete-cnpj (incomplete-cnpj-string)
+Find and display valid CNPJ numbers matching an incomplete pattern with wildcards (@code{*} or @code{?}).
+
+@item cpf-tools-format-cpf-region (beg end)
+Format the marked region as CPF.
+
+@item cpf-tools-format-cnpj-region (beg end)
+Format the marked region as CNPJ.
+
+@item cpf-tools-format-cpf-cnpj-region (beg end)
+Format the marked region as CPF or CNPJ automatically based on its length.
+@end table
+
+@bye
