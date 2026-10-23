@@ -52,9 +52,19 @@ To find valid CPFs and CNPJs matching incomplete patterns with wildcards (`*` or
 - `(cpf-tools/format-cnpj-region (point-min) (point-max))` => "12.345.678/0001-90"
 - `(cpf-tools/format-cpf-cnpj-region (point-min) (point-max))` => "123.456.789-10" or "12.345.678/0001-90"
 
+## Info Manual
+
+To compile the Texinfo documentation source (`cpf-tools.texi`) into an Emacs `.info`:
+
+```bash
+makeinfo cpf-tools.texi # requires texinfo
+```
+
+This generates `cpf-tools.info`, which can be viewed directly within Emacs via `C-h i` (Info manual browser).
+
 ## Testing
 
-Unit tests with Emacs' built-in `ert` framework:
+To run unit tests with the Emacs' built-in `ert` framework:
 
 ```bash
 emacs --batch -Q -L . -l cpf-tools.el -l test/cpf-tools-test.el -f ert-run-tests-batch-and-exit
